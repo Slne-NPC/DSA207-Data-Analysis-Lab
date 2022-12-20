@@ -3,6 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+## Preparation
+
 df = pd.read_csv('TNIstudent.csv')
 df = df.drop('Timestamp', axis=1)
 df.rename(columns={'Gender เพศ' : 'Gender',
@@ -85,7 +87,7 @@ df.head(3)
 
 df.columns
 
-
+## Assignment
 
 ### Line chart
 
