@@ -1,0 +1,133 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+df = pd.read_csv('TNIstudent.csv')
+df = df.drop('Timestamp', axis=1)
+df.rename(columns={'Gender เพศ' : 'Gender',
+                   'Degree ระดับการศึกษา': 'Degree',
+                   'Major of Study สาขา': 'Major',
+                    'Year of Birth ปีเกิด':'Birth date',
+                   'Mode of Transportation วิธีการเดินทาง': 'Transpotation',
+                   'Most favourite food shop in TNI ร้านอาหารที่ชอบในTNI':'Fav food shop in TNI',
+                   'Most favourite food shop near TNI ร้านอาหารที่ชอบใกล้TNI':'Fav food shop near TNI',
+                   'Most favourite beverage shop ร้านเครื่องดื่มที่ชอบ':'Fav beverage shop',
+                   'Most favourite vending machine ตู้กดอัตโนมัติที่ชอบ':'Fav vendor machine',
+                   'Most Favourite Sport Facilities กีฬาที่ชอบ':'Fav sport',
+                  'Most favourite spot to relax สถานที่พักผ่อนที่ชอบ':'Fav relax spot',
+                   'Time spending in the library per week (hours) เวลาที่ใช้ในห้องสมุดต่อสัปดาห์':'Number of hours spending in the library per week',
+                    'study tools and Devices อุปกรณ์ที่ใช้ในการเรียนรู้':'Study tool and device',
+                   'Device Brand แบรนด์ของอุปกรณ์':'Device Brand',
+                    'How do you spend per month คุณใช้จ่ายเท่าไรต่อเดือน':'Spending money per month',
+                    'Type of accommodation รูปแบบที่พักอาศัย':'Accommodation',
+                   'Do you think the shops in the institute is expensive คุณคิดว่าสินค้าของร้านค้าในสถาบันมีราคาสูงหรือไม่':'Price of TNI shop is expensive',
+                   'Stress from Study ความเครียดจากการเรียน':'Stress from study',
+                   'Stress from Workload and Homework ความเครียดจากงานและการบ้าน':'Stress from workload',
+                   'Stress from Social interaction ความเครียดจากสังคม':'Stress from social',
+                   'Stress from Lecturer ความเครียดจากอาจารย์ผู้สอน':'Stress from lecturer',
+                   'Stress from Family Situation ความเครียดจากครอบครัว':'Stress from family',
+                   'How satisfied with the job prospect of TNI คุณพึงพอใจกับโอกาสในการได้รับงานจากTNIหรือไม่':'Job satisfied by TNI',
+                   'How satisfied with the language proficiency in English and Japanese คุณพึงพอใจกับทักษะระดับภาษาอังกฤษและญี่ปุ่นขนาดไหน':'Languages satisfied by TNI',
+                   'How satisfied with the first aid room facility คุณพึงพอใจกับห้องปฐมพยาบาลหรือไม่':'First aid room satisfy',
+                   'How satisfied with the library คุณพึงพอใจกับห้องสมุดขนาดไหน':'Library satisfy',
+                   'How satisfied with the WiFi and Internet คุณพึงพอใจกับไวไฟและอินเตอร์เน็ตขนาดไหน':'Wifi satissfy',
+                   'Are you satisfied with the speed of the printing services shop คุณพึงพอใจกับความเร็วของร้านถ่ายเอกสารหรือไม่':'Speed of priting service satisfly',
+                   'Does cooperative shop has the item or goods you want สหกรณ์มีสินค้าที่คุณต้องการหรือไม่':'Cooperative shop satisfly',
+                   'Overall opinion about TNI ความคิดเห็นเกี่ยวกับTNI':'Overall option about TNI'
+                   }
+          , inplace=True)
+df.head(3)
+
+dithen = {
+           #Gender
+           'Male/ชาย':'M','Female/หญิง':'F','LGBT/เพศทางเลือก':'LGBT','Prefer not to say/ไม่ระบุ':'N',
+          #Degree
+          'Undergraduate/ปริญญาตรี':'Undergraduate','Master/ปริญญาโท':'Master',
+          #Trasportation
+          'Walk เดินเท้า':'Walk','Public Transport การเดินทางสาธารณะ':'Public Transport','Bicycle จักรยาน':'Bycycle','Motorbike จักรยานยนต์':'Moterbike','Car รถยนต์':'Car',
+          #Fav Food shop
+          'Hiramiya Japanese Food ร้านอาหารญี่ปุ่นฮิรามิยะ':'Japanese food','Nima (Halal food) ร้านนิมา':'Nima','โอยาซึ (o yatsu)':'Oyatsu','Kaizen ไข่เส้น':'Kaizen','Hainanese chicken rice ข้าวมันไก่นายโส่ย':'Hainanese chicken rice','Snack shop ขนม-นม-เนย':'Snack shop','Noodle shop ชิม ชาม นุ้ดเดิ้ล':'Noodle shop','Thai food shop ร้านคุณภา':'Krun Pa shop','Fast food building D ป้ากาณจน์ ตึก D':'Pra Kran shop','Thai omlet shop building D ร้านข้าวไข่เจียวตึก D': 'Omrice set shop',
+          #Fav Food outside TNI
+          'Blue shop behind 7-11 เลิศวิลัย (ร้านฟ้า)':'Leir Villiar','Green Steak shop สเต็กคุณพีซ (ร้านเขียว)':'Steak Kru Pearch','Kitty shop (japanese food) ร้านคิตตี้':'Kitty jp food','Shop under blue building ร้านพี่นก (ร้านใต้ตึกฟ้า)':'Phi Nok','Shop opposite blue building ร้านป้านิด (ร้านตรงข้ามตึกฟ้า)':'Pha Nit','Shop next to pink building ครัวเจ๊น้อย (ร้านข้างตึกชมพู)':'Krua Jei Noi','Beadouin steak and coffee เบดูอิน':'Beadouin',' Noodle at soi 40 ก๋วยเตี๋ยวซอย40':'Noodle soi 40','Food shop in front of soi 40 ร้านอาหารตามสั่งหน้าซอย40':'Food soi 40','Papaya salad at soi 40 ร้านส้มตำซอย40':'Papaya soi 40',
+          #Coffee shop
+          'Sunrise Coffee (Building A) ตึก A':'Sunrise','Infinity/เอมุ (Building E) ตึก E':'Emu','Coffee Shop (Building B) ตึก B':'Coffee Building B','Coffee Shop (Building D) ตึกD':'Coffee Building D',
+          #Relax spot
+          'library ห้องสมุด':'Library','E Building lounge เลานจ์ตึก E':'E building lounge','M floor Building E ชั้นลอยตึก E':'M florr buillding E','Vacant Classroom ห้องเรียนที่ว่าง':'Vacant classroom','Lab แล็บ':'Lab','Creative Cultural Room Building E ห้องญี่ปุ่นตึก E':'Creative Cultural Room Building E',
+          #Number of hours spending in the library per week
+          'less than 1 น้อยกว่า 1':'Less than 1','More than 20 (มากกว่า 20 ชั่วโมง)':'More than 20',
+          #Spending money per month
+          'less than 3,000 น้อยกว่า3,000':'Less than 3,000','more than 10,000 มากกว่า10,000':'More than 10,000',
+          #'Accommodation
+          'Dormitory หอพัก':'Dormitory','Condominium คอนโดมิเนียม':'Condominium','Detached House บ้านเดี่ยว':'Detached house','Apartment อพาร์ทเม้นท์':'Apartment','Town house ทาวน์เฮ้าส์':'Town house','Town home ทาวน์โฮม':'Town home',
+          #Cooperative shop satisfly
+          'Always มีตลอดเวลา':'Always','Sometimes บางครั้ง':'Sometimes','Never ไม่เคย':'Never'
+          }
+
+df['Gender'].replace(dithen,inplace=True)
+df['Degree'].replace(dithen,inplace=True)
+df['Major'].replace(dithen,inplace=True)
+df['Birth date'].replace(dithen,inplace=True)
+df['Transpotation'].replace(dithen,inplace=True)
+df['Fav food shop in TNI'].replace(dithen,inplace=True)
+df['Fav food shop near TNI'].replace(dithen,inplace=True)
+df['Fav beverage shop'].replace(dithen,inplace=True)
+df['Fav sport'].replace(dithen,inplace=True)
+df['Fav relax spot'].replace(dithen,inplace=True)
+df['Number of hours spending in the library per week'].replace(dithen,inplace=True)
+df['Spending money per month'].replace(dithen,inplace=True)
+df['Accommodation'].replace(dithen,inplace=True)
+df['Cooperative shop satisfly'].replace(dithen,inplace = True)
+
+df.to_csv(r'C:\Users\aomef\Downloads\TNIstudent1.csv')
+
+df.head(3)
+
+df.columns
+
+
+
+### Line chart
+
+plt.plot(df['Transpotation'].value_counts())
+plt.xlabel('Types of Tranformation')
+plt.ylabel('Count of Respondents')
+plt.show()
+
+cols = [ 'Stress from study','Stress from workload', 'Stress from social', 'Stress from lecturer', 'Stress from family']
+df[cols].plot(figsize=(14,6), grid=True)
+plt.ylabel('Number of Stress')
+plt.xlabel('No. of Respondents')
+df.shape
+
+### Histogram
+
+plt.hist(df['Stress from workload'])
+plt.xlabel('No. of satisfly')
+plt.ylabel('Stress from workload')
+plt.show()
+
+### Pie chart
+
+cols = ['DSA', 'DGE', 'JIB', 'IBN', 'MT', 'MIT', 'IT', 'MET', 'BI']
+total = sum(df['Major'].value_counts())
+plt.pie(df['Major'].value_counts(), labels = cols , autopct=lambda p: '{:.0f}'.format(p * total / 100),shadow=True, startangle=90)
+plt.title('Major')
+plt.show()
+
+### Scatter plot
+
+plt.scatter(df['Birth date'], df['Major'], alpha=0.2, cmap='viridis')
+plt.show()
+
+### Boxplot
+
+plt.boxplot(df['Birth date'])
+plt.show()
+
+### Treemap
+
+import plotly.express as px
+
+fig = px.treemap(df, path=[px.Constant("all"),'Birth date','Gender'])
+fig.show()
